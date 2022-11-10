@@ -21,8 +21,18 @@ class MorsoView @JvmOverloads constructor(
 
     val TAG = "MorsoView"
 
-    private val gestureListener =  MorsoGestureListener()
+    val gestureListener =  MorsoGestureListener()
     private val gestureDetector = GestureDetector(context, gestureListener)
+
+
+
+    private var backgroundText = "Morso"
+
+
+    fun updateUi(morsoUiState: MorsoUiState) {
+        backgroundText = morsoUiState.backgroundText.value.toString()
+
+    }
 
 
 
@@ -77,14 +87,14 @@ class MorsoView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         this.setBackgroundColor(Color.BLACK)
-        canvas.drawText("Morso", centerX, centerY, paint)
+        canvas.drawText(backgroundText, centerX, centerY, paint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return gestureDetector.onTouchEvent(event)
     }
 
-    fun getScreenHeight(): Int {
+    private fun getScreenHeight(): Int {
         return Resources.getSystem().displayMetrics.heightPixels
     }
 
