@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer
 class MorsoIME : InputMethodService() {
     private val TAG = "MorsoIME"
 
-    lateinit var morsoView: MorsoView
+    lateinit var morsoInputView: MorsoInputView
     lateinit var morsoGestureListener : MorsoGestureListener
     lateinit var morsoUiState: MorsoUiState
 
@@ -19,9 +19,9 @@ class MorsoIME : InputMethodService() {
     override fun onCreateInputView(): View {
 //        android.os.Debug.waitForDebugger()
 
-        val morsoLayout = layoutInflater.inflate(R.layout.input_container, null)
-        morsoView = morsoLayout.findViewById<MorsoView>(R.id.morsoView)
-        morsoGestureListener = morsoView.gestureListener
+        val morsoLayout = layoutInflater.inflate(R.layout.morso, null)
+        morsoInputView = morsoLayout.findViewById<MorsoInputView>(R.id.morsoInputView)
+        morsoGestureListener = morsoInputView.gestureListener
         morsoUiState = morsoGestureListener.morsoUiState
 
 
@@ -29,8 +29,8 @@ class MorsoIME : InputMethodService() {
         val backgroundTextObserver = Observer<String> {
 
             // Update the UI
-            morsoView.updateUi(morsoUiState)
-            morsoView.invalidate()
+            morsoInputView.updateUi(morsoUiState)
+            morsoInputView.invalidate()
 
             if (morsoUiState.backgroundText.value != "Morso") {
                 Handler(Looper.getMainLooper()).postDelayed({
