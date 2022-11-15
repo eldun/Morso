@@ -13,7 +13,7 @@ import android.view.View
 import kotlin.math.min
 
 
-class MorsoView @JvmOverloads constructor(
+class MorsoInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -33,8 +33,6 @@ class MorsoView @JvmOverloads constructor(
         backgroundText = morsoUiState.backgroundText.value.toString()
 
     }
-
-
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         // Paint styles used for rendering are initialized here. This

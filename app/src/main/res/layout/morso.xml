@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <net.eldun.morso.MorsoView
-        android:id="@+id/morsoView"
+    <net.eldun.morso.MorsoInputView
+        android:id="@+id/morsoInputView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
