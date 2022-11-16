@@ -8,7 +8,7 @@ class MorsoGestureListener : GestureDetector.SimpleOnGestureListener() {
 
     val TAG = "MorsoGestureListener"
 
-    var morsoUiState = MorsoUiState()
+    var morsoUiState = MorsoUiState
 
     /**
      * Notified when a tap occurs with the down [MotionEvent]
