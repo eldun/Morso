@@ -1,14 +1,17 @@
 package net.eldun.morso
 
+import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.inputmethod.InputConnection
 
 class MorsoGestureListener : GestureDetector.SimpleOnGestureListener() {
 
     val TAG = "MorsoGestureListener"
 
-    var morsoUiState = MorsoUiState
+    private var morsoUiState = MorsoUiState
+    lateinit var inputConnection: InputConnection
 
     /**
      * Notified when a tap occurs with the down [MotionEvent]
@@ -31,6 +34,7 @@ class MorsoGestureListener : GestureDetector.SimpleOnGestureListener() {
     override fun onSingleTapUp(e: MotionEvent): Boolean {
         Log.d(TAG, "onSingleTapUp")
         morsoUiState.backgroundText.value = "tapped"
+        inputConnection.commitText("!", 1)
         return true
     }
 

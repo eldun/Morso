@@ -31,9 +31,8 @@ class MorsoIME : InputMethodService() {
         val morsoLayout = layoutInflater.inflate(R.layout.morso, null)
         morsoInputView = morsoLayout.findViewById<MorsoInputView>(R.id.morsoInputView)
         morsoGestureListener = morsoInputView.gestureListener
-        morsoUiState = morsoGestureListener.morsoUiState
+        morsoGestureListener.inputConnection = currentInputConnection
         morsoUiStateObserver = MorsoUiStateObserver(this, morsoUiState)
-
 
         return morsoLayout
     }
@@ -55,7 +54,9 @@ class MorsoIME : InputMethodService() {
         super.onStartInputView(info, restarting)
     }
 
-
+    /**
+     * Called automatically from MorsoUiStateObserver whenever the state changes.
+     */
     fun updateUi() {
         morsoInputView.updateUi(morsoUiState)
     }

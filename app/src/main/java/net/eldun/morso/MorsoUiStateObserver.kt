@@ -12,7 +12,7 @@ class MorsoUiStateObserver(morso: MorsoIME, uiState: MorsoUiState) {
         // Create the observer which updates the UI.
         val backgroundTextObserver = Observer<String> {
 
-            morso.updateUi(uiState)
+            morso.updateUi()
 
             if (uiState.backgroundText.value != "Morso") {
                 Handler(Looper.getMainLooper()).postDelayed({
