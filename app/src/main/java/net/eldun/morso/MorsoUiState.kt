@@ -2,6 +2,7 @@ package net.eldun.morso
 
 import androidx.lifecycle.MutableLiveData
 
+// Singleton
 object MorsoUiState {
 
 

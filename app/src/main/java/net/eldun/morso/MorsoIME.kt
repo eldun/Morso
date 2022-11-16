@@ -10,7 +10,7 @@ class MorsoIME : InputMethodService() {
 
     lateinit var morsoInputView: MorsoInputView
     lateinit var morsoGestureListener : MorsoGestureListener
-    lateinit var morsoUiState: MorsoUiState
+    private val morsoUiState = MorsoUiState
     lateinit var morsoUiStateObserver: MorsoUiStateObserver
 
 
