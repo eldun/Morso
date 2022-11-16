@@ -32,6 +32,7 @@ class MorsoInputView @JvmOverloads constructor(
     fun updateUi(morsoUiState: MorsoUiState) {
         backgroundText = morsoUiState.backgroundText.value.toString()
 
+        this.invalidate()
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {

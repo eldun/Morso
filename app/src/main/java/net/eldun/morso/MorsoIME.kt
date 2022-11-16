@@ -1,11 +1,8 @@
 package net.eldun.morso
 
 import android.inputmethodservice.InputMethodService
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.View
-import androidx.lifecycle.Observer
+import android.view.inputmethod.EditorInfo
 
 
 class MorsoIME : InputMethodService() {
@@ -14,6 +11,7 @@ class MorsoIME : InputMethodService() {
     lateinit var morsoInputView: MorsoInputView
     lateinit var morsoGestureListener : MorsoGestureListener
     lateinit var morsoUiState: MorsoUiState
+    lateinit var morsoUiStateObserver: MorsoUiStateObserver
 
 
     /**
@@ -34,26 +32,32 @@ class MorsoIME : InputMethodService() {
         morsoInputView = morsoLayout.findViewById<MorsoInputView>(R.id.morsoInputView)
         morsoGestureListener = morsoInputView.gestureListener
         morsoUiState = morsoGestureListener.morsoUiState
+        morsoUiStateObserver = MorsoUiStateObserver(this, morsoUiState)
 
-
-        // Create the observer which updates the UI.
-        val backgroundTextObserver = Observer<String> {
-
-            // Update the UI
-            morsoInputView.updateUi(morsoUiState)
-            morsoInputView.invalidate()
-
-            if (morsoUiState.backgroundText.value != "Morso") {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    morsoUiState.backgroundText.value = "Morso"
-                }, 1000)
-            }
-        }
-
-        // Observe the LiveData
-        morsoUiState.backgroundText.observeForever(backgroundTextObserver)
 
         return morsoLayout
+    }
+
+
+
+    /**
+     * Called when the input view is being shown and input has started on
+     * a new editor.  This will always be called after {@link #onStartInput},
+     * allowing you to do your general setup there and just view-specific
+     * setup here.  You are guaranteed that {@link #onCreateInputView()} will
+     * have been called some time before this function is called.
+     *
+     * @param info Description of the type of text being edited.
+     * @param restarting Set to true if we are restarting input on the
+     * same text field as before.
+     */
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+    }
+
+
+    fun updateUi() {
+        morsoInputView.updateUi(morsoUiState)
     }
 
 }
