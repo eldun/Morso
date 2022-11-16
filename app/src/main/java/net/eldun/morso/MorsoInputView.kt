@@ -1,10 +1,13 @@
 package net.eldun.morso
 
+import android.R.attr.onClick
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
@@ -23,7 +26,7 @@ class MorsoInputView @JvmOverloads constructor(
 
     val gestureListener =  MorsoGestureListener()
     private val gestureDetector = GestureDetector(context, gestureListener)
-
+    private val longPressTimeout: Long = 1500
 
 
     private var backgroundText = "Morso"
@@ -88,8 +91,25 @@ class MorsoInputView @JvmOverloads constructor(
         canvas.drawText(backgroundText, centerX, centerY, paint)
     }
 
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return gestureDetector.onTouchEvent(event)
+
+        // call onHold if an ACTION_UP has not been received in longPressTimeout ms
+        if (event?.actionMasked == MotionEvent.ACTION_DOWN) {
+            handler.postDelayed({ gestureListener.onHold(event) }, longPressTimeout)
+        } else if (event?.actionMasked == MotionEvent.ACTION_UP) {
+            handler.removeCallbacksAndMessages(null)
+        }
+
+        if (gestureDetector.onTouchEvent(event)) {
+            // The event has been consumed by our simple gesture listener
+            return true
+        }
+
+        // TODO: determine what to do with ambiguous signals
+        // maybe add a progress bar for when the input is held
+        return false
+
     }
 
     private fun getScreenHeight(): Int {

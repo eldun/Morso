@@ -18,8 +18,6 @@ class MorsoGestureListener : GestureDetector.SimpleOnGestureListener() {
      * @param e The down motion event.
      */
     override fun onDown(e: MotionEvent): Boolean {
-        Log.d(TAG, "downMotion detected!")
-
         return true
     }
 
@@ -31,8 +29,15 @@ class MorsoGestureListener : GestureDetector.SimpleOnGestureListener() {
      * @return true if the event is consumed, else false
      */
     override fun onSingleTapUp(e: MotionEvent): Boolean {
-        Log.d(TAG, "tap detected!")
+        Log.d(TAG, "onSingleTapUp")
         morsoUiState.backgroundText.value = "tapped"
         return true
+    }
+
+    fun onHold(e: MotionEvent): Boolean {
+
+        Log.d(TAG, "onHold")
+        return true
+
     }
 }
