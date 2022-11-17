@@ -19,11 +19,11 @@ class MorsoInputView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View (context, attrs, defStyleAttr) {
 
-    val TAG = "MorsoView"
+    private val TAG = "MorsoView"
 
     val gestureListener =  MorsoGestureListener()
     private val gestureDetector = GestureDetector(context, gestureListener)
-
+    private val longPressTimeout: Long = 1500
 
 
     private var backgroundText = "Morso"
@@ -32,6 +32,7 @@ class MorsoInputView @JvmOverloads constructor(
     fun updateUi(morsoUiState: MorsoUiState) {
         backgroundText = morsoUiState.backgroundText.value.toString()
 
+        this.invalidate()
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -59,14 +60,14 @@ class MorsoInputView @JvmOverloads constructor(
         //Measure Width
         val width = when (widthMode) {
             MeasureSpec.EXACTLY -> widthSize
-            MeasureSpec.AT_MOST -> Math.min(desiredWidth, widthSize)
+            MeasureSpec.AT_MOST -> min(desiredWidth, widthSize)
             else -> desiredWidth
         }
 
         // Measure Height
         val height = when (heightMode) {
             MeasureSpec.EXACTLY -> heightSize
-            MeasureSpec.AT_MOST -> Math.min(desiredHeight, heightSize)
+            MeasureSpec.AT_MOST -> min(desiredHeight, heightSize)
             else -> desiredHeight
         }
 
@@ -75,7 +76,7 @@ class MorsoInputView @JvmOverloads constructor(
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
-        Log.i(TAG, "onSizeChanged: "+width+" "+height)
+        Log.i(TAG, "onSizeChanged: $width $height")
         centerX = (width / 2.0).toFloat()
         centerY = (height / 2.0).toFloat()
         paint.textSize = (min(width, height) / 4.0).toFloat()
@@ -88,8 +89,25 @@ class MorsoInputView @JvmOverloads constructor(
         canvas.drawText(backgroundText, centerX, centerY, paint)
     }
 
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return gestureDetector.onTouchEvent(event)
+
+        // call onHold if an ACTION_UP has not been received in longPressTimeout ms
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            handler.postDelayed({ gestureListener.onHold(event) }, longPressTimeout)
+        } else if (event.actionMasked == MotionEvent.ACTION_UP) {
+            handler.removeCallbacksAndMessages(null)
+        }
+
+        if (gestureDetector.onTouchEvent(event)) {
+            // The event has been consumed by our simple gesture listener
+            return true
+        }
+
+        // TODO: determine what to do with ambiguous signals
+        // maybe add a progress bar for when the input is held
+        return false
+
     }
 
     private fun getScreenHeight(): Int {
