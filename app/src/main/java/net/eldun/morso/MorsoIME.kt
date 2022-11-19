@@ -7,11 +7,15 @@ import android.view.inputmethod.EditorInfo
 
 class MorsoIME : InputMethodService() {
     private val TAG = "MorsoIME"
-
     lateinit var morsoInputView: MorsoInputView
+
+    lateinit var candidatesLayout: View
+    private var candidatesVisible = false
+
     lateinit var morsoGestureListener : MorsoGestureListener
     private val morsoUiState = MorsoUiState
     lateinit var morsoUiStateObserver: MorsoUiStateObserver
+
 
 
     /**
@@ -34,9 +38,10 @@ class MorsoIME : InputMethodService() {
         morsoGestureListener.inputConnection = currentInputConnection
         morsoUiStateObserver = MorsoUiStateObserver(this, morsoUiState)
 
+        setCandidatesViewShown(true)
+
         return morsoLayout
     }
-
 
 
     /**
@@ -54,11 +59,39 @@ class MorsoIME : InputMethodService() {
         super.onStartInputView(info, restarting)
     }
 
+    override fun onCreateCandidatesView(): View {
+
+        candidatesVisible = true
+
+        candidatesLayout = layoutInflater.inflate(R.layout.candidates, null)
+
+        return candidatesLayout
+    }
+
+    override fun onFinishCandidatesView(finishingInput: Boolean) {
+        candidatesVisible = false
+        super.onFinishCandidatesView(finishingInput)
+    }
+
     /**
      * Called automatically from MorsoUiStateObserver whenever the state changes.
      */
     fun updateUi() {
         morsoInputView.updateUi(morsoUiState)
+
+        if (candidatesVisible) {
+            val current = candidatesLayout.findViewById<MorsoCandidateView>(R.id.morsoCurrentCandidate)
+            val dot = candidatesLayout.findViewById<MorsoCandidateView>(R.id.morsoDotCandidate)
+            val dash = candidatesLayout.findViewById<MorsoCandidateView>(R.id.morsoDashCandidate)
+
+            current.text = morsoUiState.currentCandidateText.value
+            dot.text = morsoUiState.dotCandidateText.value
+            dash.text = morsoUiState.dashCandidateText.value
+
+
+//            candidatesLayout.invalidate()
+        }
+
     }
 
 }
