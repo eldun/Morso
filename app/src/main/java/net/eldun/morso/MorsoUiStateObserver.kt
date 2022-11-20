@@ -17,12 +17,6 @@ class MorsoUiStateObserver(val morso: MorsoIME, val uiState: MorsoUiState) {
         val backgroundTextObserver = Observer<String> {
 
             morso.updateUi()
-
-            if (uiState.backgroundText.value != "Morso") {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    uiState.backgroundText.value = "Morso"
-                }, 1000)
-            }
         }
 
         // Observe the LiveData
