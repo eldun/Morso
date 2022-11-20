@@ -6,8 +6,10 @@ import net.eldun.morso.enums.Character
 // Singleton
 object MorsoUiState {
 
+    val DEFAULT_BACKGROUND_TEXT = "Morso"
+
     val backgroundText: MutableLiveData<String> by lazy {
-        MutableLiveData<String>("Morso")
+        MutableLiveData<String>(DEFAULT_BACKGROUND_TEXT)
     }
 
     // Default characters
@@ -22,7 +24,7 @@ object MorsoUiState {
     }
 
     fun reset() {
-        backgroundText.value = "Morso"
+        backgroundText.value = DEFAULT_BACKGROUND_TEXT
         currentCandidateText.value = Character.START.toString()
         dotCandidateText.value = Character.E.toString()
         dashCandidateText.value = Character.T.toString()
