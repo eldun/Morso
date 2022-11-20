@@ -1,48 +1,97 @@
 package net.eldun.morso
 
 import android.inputmethodservice.InputMethodService
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.View
-import androidx.lifecycle.Observer
+import android.view.inputmethod.EditorInfo
 
 
 class MorsoIME : InputMethodService() {
     private val TAG = "MorsoIME"
-
     lateinit var morsoInputView: MorsoInputView
+
+    lateinit var candidatesLayout: View
+    private var candidatesVisible = false
+
     lateinit var morsoGestureListener : MorsoGestureListener
-    lateinit var morsoUiState: MorsoUiState
+    private val morsoUiState = MorsoUiState
+    lateinit var morsoUiStateObserver: MorsoUiStateObserver
 
 
+
+    /**
+     * Create and return the view hierarchy used for the input area (such as
+     * a soft keyboard).  This will be called once, when the input area is
+     * first displayed.  You can return null to have no input area; the default
+     * implementation returns null.
+     *
+     * <p>To control when the input view is displayed, implement
+     * {@link #onEvaluateInputViewShown()}.
+     * To change the input view after the first one is created by this
+     * function, use {@link #setInputView(View)}.
+     */
     override fun onCreateInputView(): View {
 //        android.os.Debug.waitForDebugger()
 
         val morsoLayout = layoutInflater.inflate(R.layout.morso, null)
         morsoInputView = morsoLayout.findViewById<MorsoInputView>(R.id.morsoInputView)
         morsoGestureListener = morsoInputView.gestureListener
-        morsoUiState = morsoGestureListener.morsoUiState
+        morsoGestureListener.inputConnection = currentInputConnection
+        morsoUiStateObserver = MorsoUiStateObserver(this, morsoUiState)
 
-
-        // Create the observer which updates the UI.
-        val backgroundTextObserver = Observer<String> {
-
-            // Update the UI
-            morsoInputView.updateUi(morsoUiState)
-            morsoInputView.invalidate()
-
-            if (morsoUiState.backgroundText.value != "Morso") {
-                Handler(Looper.getMainLooper()).postDelayed({
-                    morsoUiState.backgroundText.value = "Morso"
-                }, 1000)
-            }
-        }
-
-        // Observe the LiveData
-        morsoUiState.backgroundText.observeForever(backgroundTextObserver)
+        setCandidatesViewShown(true)
 
         return morsoLayout
+    }
+
+
+    /**
+     * Called when the input view is being shown and input has started on
+     * a new editor.  This will always be called after {@link #onStartInput},
+     * allowing you to do your general setup there and just view-specific
+     * setup here.  You are guaranteed that {@link #onCreateInputView()} will
+     * have been called some time before this function is called.
+     *
+     * @param info Description of the type of text being edited.
+     * @param restarting Set to true if we are restarting input on the
+     * same text field as before.
+     */
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+    }
+
+    override fun onCreateCandidatesView(): View {
+
+        candidatesVisible = true
+
+        candidatesLayout = layoutInflater.inflate(R.layout.candidates, null)
+
+        return candidatesLayout
+    }
+
+    override fun onFinishCandidatesView(finishingInput: Boolean) {
+        candidatesVisible = false
+        super.onFinishCandidatesView(finishingInput)
+    }
+
+    /**
+     * Called automatically from MorsoUiStateObserver whenever the state changes.
+     */
+    fun updateUi() {
+        morsoInputView.updateUi(morsoUiState)
+
+        if (candidatesVisible) {
+            val current = candidatesLayout.findViewById<MorsoCandidateView>(R.id.morsoCurrentCandidate)
+            val dot = candidatesLayout.findViewById<MorsoCandidateView>(R.id.morsoDotCandidate)
+            val dash = candidatesLayout.findViewById<MorsoCandidateView>(R.id.morsoDashCandidate)
+
+            current.text = morsoUiState.currentCandidateText.value
+            dot.text = morsoUiState.dotCandidateText.value
+            dash.text = morsoUiState.dashCandidateText.value
+
+
+//            candidatesLayout.invalidate()
+        }
+
     }
 
 }

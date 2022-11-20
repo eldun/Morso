@@ -1,10 +1,13 @@
 package net.eldun.morso.enums
 
+import android.util.Log
 import net.eldun.morso.enums.MorseSignal.*
 
 enum class Character(vararg var sequence: MorseSignal) {
 
-    START(),
+    START() {
+        override fun toString() = ""
+        },
 
     E(DOT),
     T(DASH),
@@ -74,14 +77,37 @@ enum class Character(vararg var sequence: MorseSignal) {
     },
     ZERO(DASH, DASH, DASH, DASH, DASH){
         override fun toString() = "0"
+    },
+    NULL(){
+        override fun toString() = ""
     };
 
     private val sequenceList = this.sequence.asList()
 
 
     companion object {
-        private val map = values().associateBy(Character::sequenceList)
-        fun fromSequenceList(seqList: List<MorseSignal>) = map[seqList]
+        val TAG = "Character"
+
+        private val sequenceMap = values().associateBy(Character::sequenceList)
+        private val stringMap = values().associateBy(Character::toString)
+
+        fun fromSequenceList(seqList: List<MorseSignal>) = sequenceMap[seqList]
+        fun fromString(stringifiedCharacter: String) = stringMap[stringifiedCharacter]
+
+        fun getDotChild(character: Character): Character {
+            val result = fromSequenceList(character.sequenceList + DOT)
+            if (result == null)
+                return Character.NULL
+            return result
+        }
+
+
+        fun getDashChild(character: Character): Character {
+            val result = fromSequenceList(character.sequenceList + DASH)
+            if (result == null)
+                return Character.NULL
+            return result
+        }
     }
 }
 
