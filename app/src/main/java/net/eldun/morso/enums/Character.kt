@@ -101,12 +101,22 @@ enum class Character(vararg var sequence: MorseSignal) {
             return result
         }
 
+        fun getDotChild(characterString: String?): Character {
+            val character = fromString(characterString!!)
+            return getDotChild(character!!)
+        }
+
 
         fun getDashChild(character: Character): Character {
             val result = fromSequenceList(character.sequenceList + DASH)
             if (result == null)
                 return Character.NULL
             return result
+        }
+
+        fun getDashChild(characterString: String?): Character {
+            val character = fromString(characterString!!)
+            return getDashChild(character!!)
         }
     }
 }
