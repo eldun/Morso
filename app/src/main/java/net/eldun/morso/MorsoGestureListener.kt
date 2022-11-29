@@ -34,27 +34,29 @@ class MorsoGestureListener : GestureDetector.SimpleOnGestureListener() {
      */
     override fun onSingleTapUp(e: MotionEvent): Boolean {
         Log.d(TAG, "onSingleTapUp")
-        morsoUiState.backgroundText.value.apply { "." }
 
-        updateCandidates(MorseSignal.DOT)
-
-        inputConnection.commitText("!", 1)
+        if (updateCandidates(MorseSignal.DOT))
+            showUserInput(".")
 
         return true
     }
 
 
-
     fun onHold(e: MotionEvent): Boolean {
-
-        updateCandidates(MorseSignal.DASH)
         Log.d(TAG, "onHold")
+
+
+        if (updateCandidates(MorseSignal.DASH))
+            showUserInput("-")
+
         return true
 
     }
 
     fun onShortPause(e: MotionEvent): Boolean {
         Log.d(TAG, "onShortPause")
+        inputConnection.commitText(morsoUiState.currentCandidateText.value, 1)
+
         morsoUiState.reset()
         return true
     }
@@ -66,24 +68,64 @@ class MorsoGestureListener : GestureDetector.SimpleOnGestureListener() {
         return true
     }
 
-    private fun updateCandidates(signal: MorseSignal) {
+    private fun showUserInput(input: String) {
 
-        if (signal == MorseSignal.DOT){
-            morsoUiState.currentCandidateText.value = morsoUiState.dotCandidateText.value
+        if (morsoUiState.backgroundText.value.equals(morsoUiState.DEFAULT_BACKGROUND_TEXT))
+            morsoUiState.backgroundText.value = input
+        else
+            morsoUiState.backgroundText.value += input
 
-            val newCurrent = Character.fromString(morsoUiState.currentCandidateText.value.toString())
+    }
 
-            morsoUiState.dotCandidateText.value = Character.getDotChild(newCurrent!!).toString()
-            morsoUiState.dashCandidateText.value = Character.getDashChild(newCurrent!!).toString()
+    /**
+     * Update current candidate, dot candidate, and dash candidate IF the character at @param signal
+     * from the current sequence is not null.
+     *
+     * @param signal the newest signal added to the sequence
+     *
+     * @return true if the candidates were updated, otherwise false
+     */
+    private fun updateCandidates(signal: MorseSignal): Boolean {
+
+        if (signal == MorseSignal.DOT) {
+            val dotChild = Character.getDotChild(morsoUiState.currentCandidateText.value)
+
+            if (dotChild == Character.NULL) {
+                return false
+            }
+
+            else {
+                val newCurrent = dotChild.toString()
+
+                morsoUiState.currentCandidateText.value = newCurrent
+
+                morsoUiState.dotCandidateText.value = Character.getDotChild(newCurrent).toString()
+                morsoUiState.dashCandidateText.value = Character.getDashChild(newCurrent).toString()
+
+                return true
+            }
         }
 
-        else if (signal == MorseSignal.DASH){
-            morsoUiState.currentCandidateText.value = morsoUiState.dashCandidateText.value
+        else if (signal == MorseSignal.DASH) {
+            val dashChild = Character.getDashChild(morsoUiState.currentCandidateText.value)
 
-            val newCurrent = Character.fromString(morsoUiState.currentCandidateText.value.toString())
+            if (dashChild == Character.NULL) {
+                return false
+            }
 
-            morsoUiState.dotCandidateText.value = Character.getDotChild(newCurrent!!).toString()
-            morsoUiState.dashCandidateText.value = Character.getDashChild(newCurrent!!).toString()
+            else {
+                val newCurrent = dashChild.toString()
+
+                morsoUiState.currentCandidateText.value = newCurrent
+
+                morsoUiState.dotCandidateText.value = Character.getDotChild(newCurrent).toString()
+                morsoUiState.dashCandidateText.value = Character.getDashChild(newCurrent).toString()
+
+                return true
+            }
         }
+
+
+        return false
     }
 }
