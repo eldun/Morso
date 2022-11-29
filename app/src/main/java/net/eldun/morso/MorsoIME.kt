@@ -1,9 +1,8 @@
 package net.eldun.morso
 
 import android.inputmethodservice.InputMethodService
+import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
-
 
 class MorsoIME : InputMethodService() {
     private val TAG = "MorsoIME"
@@ -35,7 +34,6 @@ class MorsoIME : InputMethodService() {
         val morsoLayout = layoutInflater.inflate(R.layout.morso, null)
         morsoInputView = morsoLayout.findViewById<MorsoInputView>(R.id.morsoInputView)
         morsoGestureListener = morsoInputView.gestureListener
-        morsoGestureListener.inputConnection = currentInputConnection
         morsoUiStateObserver = MorsoUiStateObserver(this, morsoUiState)
 
         setCandidatesViewShown(true)
@@ -45,18 +43,26 @@ class MorsoIME : InputMethodService() {
 
 
     /**
-     * Called when the input view is being shown and input has started on
-     * a new editor.  This will always be called after {@link #onStartInput},
-     * allowing you to do your general setup there and just view-specific
-     * setup here.  You are guaranteed that {@link #onCreateInputView()} will
-     * have been called some time before this function is called.
-     *
-     * @param info Description of the type of text being edited.
-     * @param restarting Set to true if we are restarting input on the
-     * same text field as before.
+     * Set Morso's GestureListener to the updated selection
      */
-    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
-        super.onStartInputView(info, restarting)
+    override fun onUpdateSelection(
+        oldSelStart: Int,
+        oldSelEnd: Int,
+        newSelStart: Int,
+        newSelEnd: Int,
+        candidatesStart: Int,
+        candidatesEnd: Int
+    ) {
+        super.onUpdateSelection(
+            oldSelStart,
+            oldSelEnd,
+            newSelStart,
+            newSelEnd,
+            candidatesStart,
+            candidatesEnd
+        )
+
+        morsoGestureListener.inputConnection = currentInputConnection
     }
 
     override fun onCreateCandidatesView(): View {
