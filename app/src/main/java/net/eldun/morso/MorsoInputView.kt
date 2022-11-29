@@ -24,6 +24,8 @@ class MorsoInputView @JvmOverloads constructor(
 
     val gestureListener =  MorsoGestureListener()
     private val gestureDetector = GestureDetector(context, gestureListener)
+    private var centerX = 100.0
+    private var centerY = 100.0
     private var downTime: Long = 0
     private var upTime: Long = 0
     private val dotTime: Long = 300
@@ -39,7 +41,7 @@ class MorsoInputView @JvmOverloads constructor(
     fun updateUi(morsoUiState: MorsoUiState) {
         backgroundText = morsoUiState.backgroundText.value.toString()
 
-        this.invalidate()
+        invalidate()
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -52,8 +54,7 @@ class MorsoInputView @JvmOverloads constructor(
         textSize = 55.0f
     }
 
-    private var centerX = 100F
-    private var centerY = 100F
+
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
@@ -89,8 +90,8 @@ class MorsoInputView @JvmOverloads constructor(
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
         Log.i(TAG, "onSizeChanged: $width $height")
-        centerX = (width / 2.0).toFloat()
-        centerY = (height / 2.0).toFloat()
+        centerX = (width / 2.0)
+        centerY = (height / 2.0)
         paint.textSize = (min(width, height) / 4.0).toFloat()
     }
 
@@ -98,7 +99,7 @@ class MorsoInputView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         this.setBackgroundColor(Color.BLACK)
-        canvas.drawText(backgroundText, centerX, centerY, paint)
+        canvas.drawText(backgroundText, centerX.toFloat(), centerY.toFloat(), paint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
